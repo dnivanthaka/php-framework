@@ -10,6 +10,15 @@ class Welcome extends Controller
     }
 
     public function index(){
+        $this->view->load('common/header');
         echo $this->_hello->getMessage();
+        //////echo print_r($this->_getPHPVersion());
+        $this->view->load('common/footer');
+    }
+
+    private function _getPHPVersion(){
+        exec('php --version 2>&1', $output);
+
+        return $output;
     }
 }
