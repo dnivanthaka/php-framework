@@ -11,9 +11,12 @@ class Welcome extends Controller
 
     public function index(){
         $this->view->load('common/header');
-        echo $this->_hello->getMessage();
+        $data['message'] = $this->_hello->getMessage();
+        //$data = array('message'=>$message);
+        $this->view->load('welcome', $data);
         //////echo print_r($this->_getPHPVersion());
         $this->view->load('common/footer');
+        $this->view->render();
     }
 
     private function _getPHPVersion(){

@@ -12,7 +12,7 @@ class View
     
     private $_views = [];
 
-	private $_view_data;
+	private $_view_data = [];
     
     public function __construct(){
         $this->config = Config::getInstance();
@@ -23,40 +23,44 @@ class View
     
     public function load($viewname, &$data = NULL){
         
+		ob_start();
+
         if(is_array($data)){
+        //var_dump($data);
             foreach($data as $key => $value){
                 $$key = $value;
+                //echo $key;
             }
         }
 
-		ob_start();
     
         if(isset($this->_template_header)){
-            //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_header.'.php');
-			load_view_path($this->_template_header);
+            include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_header.'.php');
+			//$this->_load_view_path($this->_template_header);
         }
         
         if(isset($this->_template_nav)){
-            //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_nav.'.php');
-			load_view_path($this->_template_nav);
+            include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_nav.'.php');
+			//$this->_load_view_path($this->_template_nav);
         }
         
-        //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$viewname.'.php');
-		load_view_path($viewname);
+        include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$viewname.'.php');
+		//$this->_load_view_path($viewname);
         
         if(isset($this->_template_footer)){
-            //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_footer.'.php');
-			load_view_path($this->_template_footer);
+            include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_footer.'.php');
+			//$this->_load_view_path($this->_template_footer);
         }
 
 			
-		$this->_view_data = ob_get_clean();
+		$this->_view_data[] = ob_get_clean();
 
 		//ob_end_clean();
 		//ob_end_flush();
     }
 
-	private function load_view_path($view){
+
+	private function _load_view_path($view){
 		if(is_file($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php')){
     		include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php');
 		}else if(is_file($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.html')){
@@ -94,8 +98,18 @@ class View
         $this->_views[] = array($viewname, $data);
     }
     
-    public function render(){
-   		echo $this->_view_data;     
+    public function render($content_type = 'text/html'){
+        $fp = fopen('php://output', 'w');
+
+        header('Content-Type: '.$content_type);
+        foreach($this->_view_data as $data){
+            //echo $data;
+            fwrite($fp, $data);
+        }
+
+        fclose($fp);
+        //echo $this->_view_data;     
+
     }
 }
 
