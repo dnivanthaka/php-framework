@@ -26,6 +26,8 @@ class View
                 $$key = $value;
             }
         }
+
+		ob_start();
     
         if(isset($this->_template_header)){
             include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_header.'.php');
@@ -40,6 +42,9 @@ class View
         if(isset($this->_template_footer)){
             include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_footer.'.php');
         }
+
+		ob_end_clean();
+		//ob_end_flush();
     }
     
     public function setcustom($type, $name, $path){
