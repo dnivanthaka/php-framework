@@ -11,6 +11,8 @@ class View
     private $_custom_js;
     
     private $_views = [];
+
+	private $_view_data;
     
     public function __construct(){
         $this->config = Config::getInstance();
@@ -30,22 +32,39 @@ class View
 		ob_start();
     
         if(isset($this->_template_header)){
-            include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_header.'.php');
+            //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_header.'.php');
+			load_view_path($this->_template_header);
         }
         
         if(isset($this->_template_nav)){
-            include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_nav.'.php');
+            //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_nav.'.php');
+			load_view_path($this->_template_nav);
         }
         
-        include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$viewname.'.php');
+        //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$viewname.'.php');
+		load_view_path($viewname);
         
         if(isset($this->_template_footer)){
-            include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_footer.'.php');
+            //include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$this->_template_footer.'.php');
+			load_view_path($this->_template_footer);
         }
 
-		ob_end_clean();
+			
+		$this->_view_data = ob_get_clean();
+
+		//ob_end_clean();
 		//ob_end_flush();
     }
+
+	private function load_view_path($view){
+		if(is_file($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php')){
+    		include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.php');
+		}else if(is_file($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.html')){
+    		include($this->config->item('app_dir').DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.$view.'.html');
+		}else{
+			echo 'Unable to load view '.$view;
+		}
+	}
     
     public function setcustom($type, $name, $path){
         if($type == 'css'){
@@ -76,7 +95,7 @@ class View
     }
     
     public function render(){
-        
+   		echo $this->_view_data;     
     }
 }
 
