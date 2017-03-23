@@ -1,5 +1,4 @@
 <?php
-
 class View
 {
     private $config;
@@ -98,7 +97,7 @@ class View
         $this->_views[] = array($viewname, $data);
     }
     
-    public function render($content_type = 'text/html'){
+    public function render($content_type = 'text/html;charset=UTF-8'){
         $fp = fopen('php://output', 'w');
 
         header('Content-Type: '.$content_type);
